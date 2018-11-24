@@ -13,14 +13,24 @@ Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mgee/lightline-bufferline'
 Plug 'qpkorr/vim-bufkill'
+Plug 'fcpg/vim-spotlightify'
+Plug 'mattn/emmet-vim'
+Plug 'ap/vim-css-color'
+Plug 'Yggdroot/indentLine'
+Plug 'majutsushi/tagbar'
+Plug 'universal-ctags/ctags'
+Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'hail2u/vim-css3-syntax'
 
 call plug#end()
 
 let g:lightline = {
-  \   'colorscheme': 'gruvbox',
+  \   'colorscheme' : 'gruvbox',
   \   'active': {
   \     'left':[ [ 'mode', 'paste' ],
-  \              [ 'gitbranch', 'readonly', 'filename', 'modified' ]
+  \              [ 'gitbranch', 'readonly', 'relativepath', 'modified' ]
   \     ]
   \   },
   \   'component': {
@@ -46,93 +56,81 @@ let g:lightline#bufferline#show_number=2
 let g:lightline#bufferline#unicode_symbols=1
 
 set showtabline=2  " Show tabline
-set guioptions-=e  " Don't use GUI tabline
-
-colorscheme gruvbox
-
+set guioptions=e  " Don't use GUI tabline
 set termguicolors
-"if $TERM =~ '^\(rxvt\|screen\|interix\|putty\)\(-.*\)\?$'
-"    set notermguicolors
-"else
-"    set termguicolors
-"endif
-
 set background=dark
 set number
 set relativenumber
 set lazyredraw
 set noshowmode " lightline shows insert so no need to show mode
 set hidden "Allow hidden buffers
-let g:GPGUseAgent=0
+set pastetoggle=<F3>
+set mouse=a
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab smarttab
+set list
+set cursorline
+set splitbelow
 
+let g:GPGUseAgent=0
+let g:user_emmet_leader_key=','
+let NERDTreeShowHidden=1
+let NERDTreeMinimalUI=1
+let NERDTreeDorArrows=1
+let NERDTreeQuitOnOpen=1
+let NERDTreeHijackNetrw=1
+let g:gruvbox_invert_tabline=1
+let g:gruvbox_contrast_dark='hard'
+
+colorscheme gruvbox
 
 " Move line(s) macros
-" Normal mode
 nnoremap <C-j> :m .+1<CR>==
 nnoremap <C-k> :m .-2<CR>==
-" Insert mode
 inoremap <C-j> <ESC>:m .+1<CR>==gi
 inoremap <C-k> <ESC>:m .-2<CR>==gi
-" Visual mode
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
 
 " tab completion in deoplete
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
-set pastetoggle=<F3>
-
-let NERDTreeShowHidden=1
-let NERDTreeMinimalUI=1
-let NERDTreeDorArrows=1
-let NERDTreeQuitOnOpen=1
-let NERDTreeHijackNetrw=1
-
-map <C-n> :NERDTreeToggle<CR>
-map <C-m> :NERDTreeFocus<CR>
-
-set mouse=a
+map <F1> :NERDTreeToggle<CR>
 
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | vsplit | endif
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | vsplit | endif
 
-:inoremap jj <Esc>
+inoremap jj <Esc>
 
-set tabstop=4 softtabstop=4 shiftwidth=4 expandtab smarttab
-set list
-
-"let g:vem_tabline_multiwindow_mode=0
-
-nnoremap <Leader>1 <Plug>lightline#bufferline#go(1)
-nnoremap <Leader>2 <Plug>lightline#bufferline#go(2)
-nnoremap <Leader>3 <Plug>lightline#bufferline#go(3)
-nnoremap <Leader>4 <Plug>lightline#bufferline#go(4)
-nnoremap <Leader>5 <Plug>lightline#bufferline#go(5)
-nnoremap <Leader>6 <Plug>lightline#bufferline#go(6)
-nnoremap <Leader>7 <Plug>lightline#bufferline#go(7)
-nnoremap <Leader>8 <Plug>lightline#bufferline#go(8)
-nnoremap <Leader>9 <Plug>lightline#bufferline#go(9)
-nnoremap <Leader>0 <Plug>lightline#bufferline#go(10)
-
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
-
+nmap <Leader>1 <Plug>lightline#bufferline#go(1)
+nmap <Leader>2 <Plug>lightline#bufferline#go(2)
+nmap <Leader>3 <Plug>lightline#bufferline#go(3)
+nmap <Leader>4 <Plug>lightline#bufferline#go(4)
+nmap <Leader>5 <Plug>lightline#bufferline#go(5)
+nmap <Leader>6 <Plug>lightline#bufferline#go(6)
+nmap <Leader>7 <Plug>lightline#bufferline#go(7)
+nmap <Leader>8 <Plug>lightline#bufferline#go(8)
+nmap <Leader>9 <Plug>lightline#bufferline#go(9)
+nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 nnoremap <leader>l :ls<CR>:b<space>
+nnoremap <C-n> :bp<CR>
+nnoremap <C-m> :bn<CR>
 
-nnoremap <M-h> :bp<CR>
-nnoremap <M-l> :bn<CR>
+nnoremap <F2> :noh<CR>
+nnoremap <C-j> <C-W><C-J>
+nnoremap <C-k> <C-W><C-K>
+nnoremap <C-l> <C-W><C-L>
+nnoremap <C-h> <C-W><C-H>
 
+nnoremap <F3> :redraw!<CR>
 
-nnoremap <Enter> :redraw!<CR>
+nnoremap <F10> <C-W>2h
+nnoremap <F11> <C-W>2h<C-W>l
+nnoremap <F12> <C-w>2l
 
-set cursorline
-set splitbelow
 
 "copy paste to clipboard
 inoremap <C-v> <ESC>"=substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>pi
-nnoremap <C-v> "=substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>p
+nnoremap <C-v> =substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>p
 
 vnoremap <C-c> :'<,'>:w !/mnt/c/Windows/System32/clip.exe<CR><CR>
