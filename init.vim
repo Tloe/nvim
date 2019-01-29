@@ -7,8 +7,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'ryanoasis/vim-devicons'
 Plug 'nvie/vim-flake8'
 Plug 'Kuniwak/vint'
-Plug 'w0rp/ale'
-Plug 'christoomey/vim-system-copy'
 Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'kien/ctrlp.vim'
 Plug 'mgee/lightline-bufferline'
@@ -16,13 +14,15 @@ Plug 'qpkorr/vim-bufkill'
 Plug 'fcpg/vim-spotlightify'
 Plug 'mattn/emmet-vim'
 Plug 'ap/vim-css-color'
-Plug 'Yggdroot/indentLine'
 Plug 'majutsushi/tagbar'
-Plug 'universal-ctags/ctags'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'hail2u/vim-css3-syntax'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install bin' }
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-unimpaired'
+Plug 'heavenshell/vim-jsdoc'
 
 call plug#end()
 
@@ -70,6 +70,8 @@ set tabstop=4 softtabstop=4 shiftwidth=4 expandtab smarttab
 set list
 set cursorline
 set splitbelow
+set noswapfile
+set autoread
 
 let g:GPGUseAgent=0
 let g:user_emmet_leader_key=','
@@ -80,6 +82,8 @@ let NERDTreeQuitOnOpen=1
 let NERDTreeHijackNetrw=1
 let g:gruvbox_invert_tabline=1
 let g:gruvbox_contrast_dark='hard'
+let g:jsdoc_allow_input_prompt=1
+let g:jsdoc_input_description=1
 
 colorscheme gruvbox
 
@@ -94,10 +98,7 @@ vnoremap <C-k> :m '<-2<CR>gv=gv
 " tab completion in deoplete
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
-map <F1> :NERDTreeToggle<CR>
-
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | vsplit | endif
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | vsplit | endif
 
 inoremap jj <Esc>
@@ -112,25 +113,68 @@ nmap <Leader>7 <Plug>lightline#bufferline#go(7)
 nmap <Leader>8 <Plug>lightline#bufferline#go(8)
 nmap <Leader>9 <Plug>lightline#bufferline#go(9)
 nmap <Leader>0 <Plug>lightline#bufferline#go(10)
-nnoremap <leader>l :ls<CR>:b<space>
+
 nnoremap <C-n> :bp<CR>
 nnoremap <C-m> :bn<CR>
 
-nnoremap <F2> :noh<CR>
 nnoremap <C-j> <C-W><C-J>
 nnoremap <C-k> <C-W><C-K>
 nnoremap <C-l> <C-W><C-L>
 nnoremap <C-h> <C-W><C-H>
 
-nnoremap <F3> :redraw!<CR>
+map <F1> :NERDTreeToggle<CR>
+nnoremap <F2> :noh<CR>
+nnoremap <F4> :redraw!<CR>
+nnoremap <F7> :cp<CR>zz
+nnoremap <F8> :cn<CR>zz
+nnoremap <F9> :exe ':silent !firefox --new-window %'<CR>
+nnoremap <F10> <C-W><C-L>:vert rightb copen 100<cr><C-w>=
+nnoremap <F11> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+nnoremap <F12> <C-w><C-w>
 
-nnoremap <F10> <C-W>2h
-nnoremap <F11> <C-W>2h<C-W>l
-nnoremap <F12> <C-w>2l
+nnoremap <leader>l :ls<CR>:b<space>
+nnoremap <Leader>cp caw/*<C-v><Esc>pa*/<C-v><Esc>/[,)]<C-v><C-m>nb
+nnoremap <leader>ct :!exctags -R -f ./.git/tags Code/
+nnoremap <leader>rm :call delete(expand('%:p'))
 
+nnoremap <Leader>s :%s/<C-r><C-w>/
+"command! -nargs=1 -complete=file GREP execute "vimgrep /" . expand("<cword>") . "/j <args>/**" <Bar> cw<CR>
+function! GrepWordUnderCursor()
+    let wordUnderCursor = expand('<cword>')
+    call inputsave()
+    let grepFor = input('Grep for: ', wordUnderCursor)
+    call inputrestore()
+    call inputsave()
+    let folder = input({'prompt': 'In folder: ', 'default': '.', 'completion': 'file'})
+    call inputrestore()
+    execute "vimgrep /" . grepFor . "/j " . folder . "/**"
+endfunction
+nnoremap <Leader>gc :call GrepWordUnderCursor()<cr>
+
+nmap . [
+nmap - ]
+omap . [
+omap - ]
+xmap . [
+xmap - ]
 
 "copy paste to clipboard
-inoremap <C-v> <ESC>"=substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>pi
-nnoremap <C-v> =substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>p
+if has('win32')
+    inoremap <C-v> <ESC>"=substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>pi
+    nnoremap <C-v> =substitute(substitute(system('powershell.exe Get-ClipBoard'),'[\r\n]*$','',''), '\r', '', 'g')<CR>p
+    vnoremap <C-c> :'<,'>:w !/mnt/c/Windows/System32/clip.exe<CR><CR>
+endif
 
-vnoremap <C-c> :'<,'>:w !/mnt/c/Windows/System32/clip.exe<CR><CR>
+" " Copy to clipboard
+vnoremap  <leader>y "+y
+nnoremap  <leader>Y "+yg_
+nnoremap  <leader>y "+y
+nnoremap  <leader>yy "+yy
+
+" " Paste from clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
+
+:set makeprg=make\ -C\ build 
