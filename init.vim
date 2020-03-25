@@ -23,6 +23,10 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install bin' }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-unimpaired'
 Plug 'heavenshell/vim-jsdoc'
+Plug 'othree/yajs.vim'
+Plug 'chemzqm/vim-jsx-improve'
+
+"Plug 'terryma/vim-multiple-cursors'
 
 call plug#end()
 
@@ -66,12 +70,26 @@ set noshowmode " lightline shows insert so no need to show mode
 set hidden "Allow hidden buffers
 set pastetoggle=<F3>
 set mouse=a
-set tabstop=4 softtabstop=4 shiftwidth=4 expandtab smarttab
 set list
 set cursorline
 set splitbelow
 set noswapfile
+set backupcopy=yes
 set autoread
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab smarttab
+
+let g:fourSpaceTab = 1
+function! ToggleIndent()
+    if g:fourSpaceTab
+        set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab
+        let g:fourSpaceTab = 0
+    else
+        set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab
+        let g:fourSpaceTab = 1
+    endif
+endfunction
+command! ToggleIndentation call ToggleIndent()
+autocmd FileType javascript ToggleIndent
 
 let g:GPGUseAgent=0
 let g:user_emmet_leader_key=','
@@ -86,6 +104,19 @@ let g:jsdoc_allow_input_prompt=1
 let g:jsdoc_input_description=1
 
 colorscheme gruvbox
+
+"multiple cursor keys
+"let g:multi_cursor_use_default_mapping=0
+
+" Default mapping
+"let g:multi_cursor_start_word_key      = '<C-s>'
+"let g:multi_cursor_select_all_word_key = '<A-s>'
+"let g:multi_cursor_start_key           = 'g<C-s>'
+"let g:multi_cursor_select_all_key      = 'g<A-s>'
+"let g:multi_cursor_next_key            = '<C-s>'
+"let g:multi_cursor_prev_key            = '<C-p>'
+"let g:multi_cursor_skip_key            = '<C-x>'
+"let g:multi_cursor_quit_key            = '<Esc>'
 
 " Move line(s) macros
 nnoremap <C-j> :m .+1<CR>==
@@ -123,6 +154,7 @@ nnoremap <C-l> <C-W><C-L>
 nnoremap <C-h> <C-W><C-H>
 
 map <F1> :NERDTreeToggle<CR>
+imap <F1> <esc>:NERDTreeToggle<CR>
 nnoremap <F2> :noh<CR>
 nnoremap <F4> :redraw!<CR>
 nnoremap <F7> :cp<CR>zz
